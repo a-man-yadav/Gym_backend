@@ -1,0 +1,64 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Build / compiled files
+dist/
+build/
+tmp/
+temp/
+
+# Dependency directories
+jspm_packages/
+bower_components/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.sqlite
+*.sqlite-journal
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor configs
+.vscode/
+.idea/
+*.swp
+
+# Optional caches
+.npm/
+.eslintcache
+.cache/
+.parcel-cache/
+.next/
+out/
+
+# PM2 logs / dumps
+pmlogs/
+dump.rdb
+
+# Others
+*.tgz
