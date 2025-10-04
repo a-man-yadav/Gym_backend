@@ -1,8 +1,20 @@
 const Program = require('../models/Program');
 const mongoose = require('mongoose');
 
+// ================= USER CONTROLLERS =================
+
+// @desc Create a new program (always private)
 exports.createMyProgram = async (req, res) => {
   try {
+    const { workouts = [], sessionsPerWeek } = req.body;
+
+    if (workouts.length !== sessionsPerWeek) {
+      return res.status(400).json({
+        success: false,
+        message: `Workout array length (${workouts.length}) must equal sessionsPerWeek (${sessionsPerWeek})`
+      });
+    }
+
     const program = await Program.create({
       ...req.body,
       creator: req.user._id,
@@ -16,6 +28,7 @@ exports.createMyProgram = async (req, res) => {
   }
 };
 
+// @desc Get all programs created by the logged-in user
 exports.getMyPrograms = async (req, res) => {
   try {
     const programs = await Program.find({ creator: req.user._id });
@@ -25,6 +38,7 @@ exports.getMyPrograms = async (req, res) => {
   }
 };
 
+// @desc Get one program by ID (must be user’s own)
 exports.getMyProgramById = async (req, res) => {
   try {
     const program = await Program.findOne({
@@ -41,8 +55,18 @@ exports.getMyProgramById = async (req, res) => {
   }
 };
 
+// @desc Update user’s own program
 exports.updateMyProgram = async (req, res) => {
   try {
+    const { workouts, sessionsPerWeek } = req.body;
+
+    if (workouts && workouts.length !== sessionsPerWeek) {
+      return res.status(400).json({
+        success: false,
+        message: `Workout array length (${workouts.length}) must equal sessionsPerWeek (${sessionsPerWeek})`
+      });
+    }
+
     const program = await Program.findOneAndUpdate(
       { _id: req.params.id, creator: req.user._id },
       req.body,
@@ -58,6 +82,7 @@ exports.updateMyProgram = async (req, res) => {
   }
 };
 
+// @desc Delete user’s own program
 exports.deleteMyProgram = async (req, res) => {
   try {
     const program = await Program.findOneAndDelete({
@@ -74,8 +99,20 @@ exports.deleteMyProgram = async (req, res) => {
   }
 };
 
+// ================= ADMIN CONTROLLERS =================
+
+// @desc Admin: create a new public program
 exports.createProgramAdmin = async (req, res) => {
   try {
+    const { workouts = [], sessionsPerWeek } = req.body;
+
+    if (workouts.length !== sessionsPerWeek) {
+      return res.status(400).json({
+        success: false,
+        message: `Workout array length (${workouts.length}) must equal sessionsPerWeek (${sessionsPerWeek})`
+      });
+    }
+
     const program = await Program.create({
       ...req.body,
       creator: req.user._id,
@@ -89,6 +126,7 @@ exports.createProgramAdmin = async (req, res) => {
   }
 };
 
+// @desc Admin: get all programs (any status)
 exports.getAllProgramsAdmin = async (req, res) => {
   try {
     const programs = await Program.find().populate('creator', 'name email role');
@@ -98,8 +136,18 @@ exports.getAllProgramsAdmin = async (req, res) => {
   }
 };
 
+// @desc Admin: update any program
 exports.updateProgramAdmin = async (req, res) => {
   try {
+    const { workouts, sessionsPerWeek } = req.body;
+
+    if (workouts && workouts.length !== sessionsPerWeek) {
+      return res.status(400).json({
+        success: false,
+        message: `Workout array length (${workouts.length}) must equal sessionsPerWeek (${sessionsPerWeek})`
+      });
+    }
+
     const program = await Program.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
@@ -114,6 +162,7 @@ exports.updateProgramAdmin = async (req, res) => {
   }
 };
 
+// @desc Admin: delete any program
 exports.deleteProgramAdmin = async (req, res) => {
   try {
     const program = await Program.findByIdAndDelete(req.params.id);
@@ -126,6 +175,7 @@ exports.deleteProgramAdmin = async (req, res) => {
   }
 };
 
+// @desc Admin: toggle featured flag
 exports.toggleFeaturedProgram = async (req, res) => {
   try {
     const program = await Program.findById(req.params.id);
@@ -145,7 +195,9 @@ exports.toggleFeaturedProgram = async (req, res) => {
   }
 };
 
+// ================= PUBLIC CONTROLLERS =================
 
+// @desc Get all public programs
 exports.getPublicPrograms = async (req, res) => {
   try {
     const programs = await Program.find({ status: 'public' })
@@ -158,6 +210,7 @@ exports.getPublicPrograms = async (req, res) => {
   }
 };
 
+// @desc Get single public program by ID
 exports.getPublicProgramById = async (req, res) => {
   try {
     const program = await Program.findOne({

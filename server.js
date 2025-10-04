@@ -7,6 +7,7 @@ const authRoutes = require('./src/routes/authRoutes')
 const userRoutes = require('./src/routes/userRoutes')
 const exerciseRoutes = require('./src/routes/exerciseRoutes')
 const programRoutes = require('./src/routes/programRoutes')
+const adminRoutes = require('./src/routes/adminRoutes')
 
 dotenv.config()
 
@@ -36,6 +37,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/exercises', exerciseRoutes)
 app.use('/api/programs', programRoutes)
+app.use('/api/admin', adminRoutes)
 
 
 app.get('/', (req, res) => {
