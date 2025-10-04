@@ -8,32 +8,40 @@ const WorkoutExerciseSchema = new mongoose.Schema({
     },
     sets: {
         type: Number,
-        required: true
+        required: true,
+        min: [1, 'Sets must be at least 1'],
+        max: [20, 'Sets cannot exceed 20']
     },
     reps: {
         type: Number,
-        required: true
+        required: true,
+        min: [1, 'Reps must be at least 1'],
+        max: [100, 'Reps cannot exceed 100']
     },
     notes: {
         type: String,
         trim: true,
         maxlength: [200, 'Notes cannot be more than 200 characters']
     }
-});
+}, { _id: false }); 
 
 const WorkoutDaySchema = new mongoose.Schema({
     day: {
         type: Number,
-        required: true
+        required: true,
+        min: [1, 'Day must start from 1']
     },
     title: {
         type: String,
         default: '',
         trim: true,
-        maxlength: [20, 'Title cannot be more than 20 characters']
+        maxlength: [30, 'Title cannot be more than 30 characters']
     },
-    exercises: [WorkoutExerciseSchema]
-});
+    exercises: {
+        type: [WorkoutExerciseSchema],
+        validate: v => Array.isArray(v) && v.length > 0
+    }
+}, { _id: false });
 
 const ProgramSchema = new mongoose.Schema({
     name: {
@@ -46,7 +54,7 @@ const ProgramSchema = new mongoose.Schema({
         type: String,
         default: '',
         trim: true,
-        maxlength: [500, 'Description cannot be more than 500 characters']
+        maxlength: [1000, 'Description cannot be more than 1000 characters']
     },
     duration: {
         type: String,
@@ -54,7 +62,7 @@ const ProgramSchema = new mongoose.Schema({
         enum: ['4 weeks', '6 weeks', '8 weeks', '10 weeks', '12 weeks', '14 weeks', '16 weeks']
     },
     goals: {
-        type: String,
+        type: [String],
         required: [true, 'Please add goals'],
         enum: ['strength', 'hypertrophy', 'fat-loss', 'weight-gain']
     },
@@ -64,41 +72,33 @@ const ProgramSchema = new mongoose.Schema({
         enum: ['Beginner', 'Intermediate', 'Advanced']
     },
     sessionsPerWeek: {
-        type: String,
-        required: [true, 'Please add a sessions per week'],
-        enum: ['3', '4', '5', '6']
+        type: Number,
+        required: [true, 'Please add sessions per week'],
+        enum: [3, 4, 5, 6]
     },
     durationPerSession: {
         type: String,
-        required: [true, 'Please add a duration per session'],
+        required: [true, 'Please add duration per session'],
         enum: ['30 minutes', '45 minutes', '60 minutes', '75 minutes', '90 minutes']
     },
-    type:{
-        type: String,
-        enum: ['exercise', 'diet'],
-        required: true
-    },
-    isFeature: {
-        type:Boolean,
-        default: false
-    },
-
     workouts: [WorkoutDaySchema],
 
-    creator:{
+    creator: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    isPublic:{
+
+    isFeatured: {
         type: Boolean,
         default: false
     },
+
     status: {
         type: String,
-        enum: ['private','pending_approval', 'approved', 'rejected'],
-        default: 'private'
+        enum: ['private', 'public'], 
+        default: 'private' // private for user but public for admin
     },
-},{timestamps: true}); 
+}, { timestamps: true });
 
 module.exports = mongoose.model('Program', ProgramSchema);
